@@ -1,35 +1,20 @@
 import {
-  Avatar,
   Button,
   Flex,
   HStack,
-  Input,
   Text,
+  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
+
 import { useEffect, useState } from "react";
 import { ChatMessage } from "../components/ChatMessage";
-import { createClient } from "@supabase/supabase-js";
-
-const URL = process.env.NEXT_PUBLIC_URL!;
-const ANON_KEY = process.env.NEXT_PUBLIC_ANON!;
-
-interface IBoss {
-  id: number;
-  created_at: string;
-  city: string;
-  name: string;
-  user: string;
-  world: string;
-}
+import { Modal } from "../components/Modal";
+import { db } from "../db/config";
+import { IBoss } from "../data/IBoss";
 
 export const PageChat = () => {
-  const { query } = useRouter();
-  const db = createClient(URL, ANON_KEY);
-
-  const user = query.user as string;
-  const currentDate = new Date().toLocaleDateString();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [bosses, setBosses] = useState<IBoss[]>([]);
 
@@ -58,6 +43,7 @@ export const PageChat = () => {
       color="gray.100"
       fontFamily="monospace"
     >
+      <Modal isOpen={isOpen} onClose={onClose} />
       <VStack
         w="full"
         maxW="container.sm"
@@ -95,7 +81,7 @@ export const PageChat = () => {
           h="full"
         >
           {bosses?.map((boss) => {
-            const currentDate = new Date(boss.created_at).toLocaleDateString();
+            const currentDate = new Date(boss.created_at!).toLocaleDateString();
             return (
               <ChatMessage
                 key={boss.id}
@@ -108,6 +94,21 @@ export const PageChat = () => {
             );
           })}
         </VStack>
+        <HStack w="full" justify="flex-end">
+          <Button
+            bg="gray.700"
+            color="gray.200"
+            border="1px"
+            borderColor="gray.600"
+            fontSize="xs"
+            fontWeight="normal"
+            borderRadius="0"
+            _hover={{ bg: "gray.800" }}
+            onClick={() => onOpen()}
+          >
+            Cadastrar Boss
+          </Button>
+        </HStack>
       </VStack>
     </Flex>
   );
