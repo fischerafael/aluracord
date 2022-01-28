@@ -23,12 +23,13 @@ export const PageChat = () => {
   useEffect(() => {
     db.from("boss")
       .select("*")
+      .order("created_at", { ascending: false })
       .then((res) => {
         if (res.data) {
           setBosses(res.data);
         }
       });
-  }, []);
+  }, [onClose]);
 
   return (
     <Flex
