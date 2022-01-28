@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IBoss } from "../data/IBoss";
 import { db } from "../db/config";
 
@@ -33,6 +33,7 @@ export const Modal = ({ isOpen, onClose }: Props) => {
   } as IBoss);
 
   const [isLoading, setLoading] = useState(false);
+  const [isDisabled, setDisabled] = useState(true);
 
   const handleCreateBoss = () => {
     setLoading(true);
@@ -43,6 +44,15 @@ export const Modal = ({ isOpen, onClose }: Props) => {
         onClose();
       });
   };
+
+  useEffect(() => {
+    if (boss.city.length > 3 && boss.name.length > 3 && boss.world.length > 3) {
+      setDisabled(false);
+      return;
+    }
+
+    setDisabled(true);
+  }, [boss]);
 
   return (
     <ChakraModal isOpen={isOpen} onClose={onClose}>
@@ -105,6 +115,7 @@ export const Modal = ({ isOpen, onClose }: Props) => {
                   borderRadius="0"
                   _hover={{ bg: "gray.800" }}
                   onClick={handleCreateBoss}
+                  isDisabled={isDisabled}
                 >
                   Cadastrar
                 </Button>

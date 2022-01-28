@@ -59,6 +59,7 @@ export const PageChat = () => {
         h="full"
       >
         <Text>Boss Log</Text>
+
         <VStack
           w="full"
           bg="gray.800"
