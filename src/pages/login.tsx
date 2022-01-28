@@ -1,18 +1,26 @@
-import {
-  Avatar,
-  Button,
-  Flex,
-  HStack,
-  Input,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Avatar, Flex, HStack, Input, Text, VStack } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Button } from "../components/Button";
 
 export const PageLogin = () => {
   const [user, setUser] = useState("");
   const { push } = useRouter();
+
+  const [isDisabled, setDisabled] = useState(true);
+
+  useEffect(() => {
+    if (!user || user.length < 3) {
+      setDisabled(true);
+      return;
+    }
+
+    setDisabled(false);
+  }, [user]);
+
+  const handleChat = () => {
+    push(`/chat?user=${user}`);
+  };
 
   return (
     <Flex
@@ -57,19 +65,11 @@ export const PageLogin = () => {
 
         <HStack w="full" justify="flex-end">
           <Button
-            bg="gray.700"
-            color="gray.200"
-            border="1px"
-            borderColor="gray.600"
-            fontSize="xs"
-            fontWeight="normal"
-            borderRadius="0"
-            _hover={{ bg: "gray.800" }}
-            onClick={() => push(`/chat?user=${user}`)}
-          >
-            Entrar
-            <Avatar size="xs" ml="4" src={`https://github.com/${user}.png`} />
-          </Button>
+            action="Entrar"
+            user={user}
+            isDisabled={isDisabled}
+            onClick={handleChat}
+          />
         </HStack>
       </VStack>
     </Flex>
