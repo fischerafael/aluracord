@@ -8,14 +8,42 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChatMessage } from "../components/ChatMessage";
+import { createClient } from "@supabase/supabase-js";
+
+const URL = process.env.NEXT_PUBLIC_URL!;
+const ANON_KEY = process.env.NEXT_PUBLIC_ANON!;
+
+interface IBoss {
+  id: number;
+  created_at: string;
+  city: string;
+  name: string;
+  user: string;
+  world: string;
+}
 
 export const PageChat = () => {
   const { query } = useRouter();
+  const db = createClient(URL, ANON_KEY);
 
   const user = query.user as string;
   const currentDate = new Date().toLocaleDateString();
+
+  const [bosses, setBosses] = useState<IBoss[]>([]);
+
+  console.log(bosses);
+
+  useEffect(() => {
+    db.from("boss")
+      .select("*")
+      .then((res) => {
+        if (res.data) {
+          setBosses(res.data);
+        }
+      });
+  }, []);
 
   return (
     <Flex
@@ -66,41 +94,19 @@ export const PageChat = () => {
           }}
           h="full"
         >
-          <ChatMessage
-            user={user}
-            currentDate={currentDate}
-            boss="Orshabaal"
-            city="Ankrahmun"
-            world="Pacera"
-          />
-          <ChatMessage
-            user={user}
-            currentDate={currentDate}
-            boss="Orshabaal"
-            city="Ankrahmun"
-            world="Pacera"
-          />
-          <ChatMessage
-            user={user}
-            currentDate={currentDate}
-            boss="Orshabaal"
-            city="Ankrahmun"
-            world="Pacera"
-          />
-          <ChatMessage
-            user={user}
-            currentDate={currentDate}
-            boss="Orshabaal"
-            city="Ankrahmun"
-            world="Pacera"
-          />
-          <ChatMessage
-            user={user}
-            currentDate={currentDate}
-            boss="Orshabaal"
-            city="Ankrahmun"
-            world="Pacera"
-          />
+          {bosses?.map((boss) => {
+            const currentDate = new Date(boss.created_at).toLocaleDateString();
+            return (
+              <ChatMessage
+                key={boss.id}
+                user={boss.user}
+                currentDate={currentDate}
+                boss={boss.name}
+                city={boss.city}
+                world={boss.world}
+              />
+            );
+          })}
         </VStack>
       </VStack>
     </Flex>
